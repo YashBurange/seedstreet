@@ -1,0 +1,9 @@
+[
+  {"id":"guest","name":"Guest","label":"Browse as Guest","role":"guest"},
+  {"id":"maya","name":"Maya Chen","label":"Demo Founder: Maya Chen","role":"founder","title":"Founder, OrbitalMesh","bio":"Aerospace systems engineer and former mission operations lead.","startupId":"s1"},
+  {"id":"alex","name":"Alex Morgan","label":"Demo Investor: Alex Morgan","role":"investor","title":"Partner, Northline Ventures","bio":"Seed investor focused on infrastructure, aerospace, and industrial systems."},
+  {"id":"jordan","name":"Jordan Lee","label":"Demo Investor: Jordan Lee","role":"investor","title":"Principal, Common Ground Capital","bio":"Early-stage investor in climate resilience and the future of work."},
+  {"id":"samira","name":"Samira Khan","label":"Investor: Samira Khan","role":"investor","title":"Angel investor","bio":"Operator-turned-angel investing in health and fintech."},
+  {"id":"diego","name":"Diego Ruiz","label":"Investor: Diego Ruiz","role":"investor","title":"Partner, Mesa Fund","bio":"Invests in climate and applied science companies."},
+  {"id":"erin","name":"Erin Cho","label":"Investor: Erin Cho","role":"investor","title":"Managing Director, Civic Seed","bio":"Backs founders building stronger public systems."}
+]
