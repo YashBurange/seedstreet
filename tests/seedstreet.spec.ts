@@ -38,10 +38,16 @@ test.describe("SeedStreet demo", () => {
     await page.getByLabel("Message to founder").fill("Interested in the resilient connectivity thesis and pilot conversion plan.");
     await page.getByRole("button", { name: /Submit offer/ }).click();
     await expect(page.getByText("Offer sent to Maya Chen")).toBeVisible();
+    await page.goto("/investor/portfolio");
+    await page.getByRole("button", { name: /OrbitalMesh/ }).first().click();
+    await expect(page.getByText("Offer conversation")).toBeVisible();
+    await page.getByPlaceholder("Write a message").fill("Can you share the pilot conversion timeline?");
+    await page.getByRole("button", { name: "Send message" }).click();
 
     await page.goto("/");
     await page.getByRole("link", { name: /Enter founder workspace/ }).click();
     await expect(page.getByText("Alex Morgan", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText("Can you share the pilot conversion timeline?")).toBeVisible();
     await page.screenshot({ path: `test-results/${testInfo.project.name}-founder-workspace.png`, fullPage: true });
     await page.getByLabel("Counter valuation").fill("5000000");
     await page.getByRole("button", { name: "Send counter" }).click();
@@ -60,8 +66,8 @@ test.describe("SeedStreet demo", () => {
     await expect(page.getByText("Meeting confirmed")).toBeVisible();
     await page.goto("/investor/portfolio");
     await page.getByRole("button", { name: /OrbitalMesh/ }).first().click();
-    await page.getByRole("button", { name: "Record simulated commitment" }).click();
-    await expect(page.getByText("Commitment recorded")).toBeVisible();
+    await page.getByRole("button", { name: "Record commitment" }).click();
+    await expect(page.getByText("Committed", { exact: true }).first()).toBeVisible();
   });
 
   test("founder editor updates the existing company profile", async ({ page }) => {
