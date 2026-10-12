@@ -25,8 +25,19 @@ test.describe("SeedStreet demo", () => {
     await page.goto("/investor/portfolio");
     await expect(page.getByText("Investor workspace")).toHaveCount(0);
     if (testInfo.project.name === "desktop") {
-      const scrolls = await page.evaluate(() => document.documentElement.scrollHeight > window.innerHeight);
-      expect(scrolls).toBe(false);
+      const layout = await page.evaluate(() => {
+        const button = document.querySelector<HTMLButtonElement>(".message-compose button")!.getBoundingClientRect();
+        const icon = document.querySelector<SVGElement>(".message-compose button svg")!.getBoundingClientRect();
+        return {
+          scrolls: document.documentElement.scrollHeight > window.innerHeight,
+          iconOffsetX: icon.left + icon.width / 2 - (button.left + button.width / 2),
+          iconOffsetY: icon.top + icon.height / 2 - (button.top + button.height / 2),
+        };
+      });
+      expect(layout.scrolls).toBe(false);
+      expect(Math.abs(layout.iconOffsetX)).toBeLessThan(1);
+      expect(Math.abs(layout.iconOffsetY)).toBeLessThan(1);
+      await page.screenshot({ path: "test-results/desktop-investor-workspace.png", fullPage: true });
     }
   });
 
@@ -49,6 +60,10 @@ test.describe("SeedStreet demo", () => {
     await expect(page.getByText("Alex Morgan", { exact: true }).first()).toBeVisible();
     await expect(page.getByText("Can you share the pilot conversion timeline?")).toBeVisible();
     await page.screenshot({ path: `test-results/${testInfo.project.name}-founder-workspace.png`, fullPage: true });
+    if (testInfo.project.name === "desktop") {
+      const scrolls = await page.evaluate(() => document.documentElement.scrollHeight > window.innerHeight);
+      expect(scrolls).toBe(false);
+    }
     await page.getByLabel("Counter valuation").fill("5000000");
     await page.getByRole("button", { name: "Send counter" }).click();
     await page.goto("/founder/meetings");
