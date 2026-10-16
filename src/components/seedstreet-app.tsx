@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import {
   ArrowLeft, ArrowRight, Bookmark, Building2, CalendarDays, Check, ChevronRight,
   Download, FileUp, Grid2X2, LayoutList, MessageSquare, Pencil, Plus,
-  Search, Send, SlidersHorizontal, Upload, UserRound,
+  Search, Send, SlidersHorizontal, Upload, UserRound, X,
 } from "lucide-react";
 import { accounts, useSeedStreetStore } from "@/store/useSeedStreetStore";
 import { equityMath, money, percent } from "@/lib/finance";
@@ -423,6 +423,7 @@ function draftFromStartup(startup: Startup): DraftApplication {
 
 function FounderApplication() {
   const { accountId, startups, draft, setDraft, publishDraft } = useSeedStreetStore();
+  const [documents, setDocuments] = useState<File[]>([]);
   const founderStartupId = accounts.find((item) => item.id === accountId)?.startupId;
   const founderStartup = startups.find((item) => item.id === founderStartupId);
   const [published, setPublished] = useState<{ slug: string; edited: boolean } | null>(null);
@@ -440,7 +441,18 @@ function FounderApplication() {
       <section className="application-content"><div className="mobile-step">Step {draft.step + 1} of 8 <Progress value={((draft.step + 1) / 8) * 100} /></div><div className="application-heading"><span>Step {draft.step + 1}</span><h2>{step.title}</h2></div>
         {draft.step === 1 && <PeopleEditor draft={draft} setDraft={setDraft} />}
         {draft.step < 7 && <div className="application-fields">{step.fields.map(([key, label]) => <label key={key}>{label}{["problem", "alternatives", "whyNow", "solution", "differentiation", "advantage", "market", "businessModel", "traction", "useOfFunds"].includes(key) ? <Textarea value={draft.values[key] ?? ""} onChange={(event) => update(key, event.target.value)} /> : key === "instrument" ? <Select value={draft.values[key] ?? ""} onChange={(event) => update(key, event.target.value)}><option value="">Select instrument</option><option>Priced equity</option><option>SAFE</option><option>Convertible note</option></Select> : key === "stage" ? <Select value={draft.values[key] ?? ""} onChange={(event) => update(key, event.target.value)}><option value="">Select stage</option><option>Pre-seed</option><option>Seed</option><option>Series A</option></Select> : <Input type={["raise", "valuationMin", "valuationMax", "minInvestment", "ownership"].includes(key) ? "number" : key === "founded" ? "date" : "text"} value={draft.values[key] ?? ""} onChange={(event) => update(key, event.target.value)} />}</label>)}</div>}
-        {draft.step === 0 && <div className="upload-zone"><Upload /><div><strong>Add a company logo or product image</strong><span>PNG or JPG, up to 1 MB.</span></div><Input type="file" accept="image/png,image/jpeg" onChange={(event) => { const file = event.target.files?.[0]; if (file && file.size > 1024 * 1024) window.alert("Please choose a file smaller than 1 MB."); }} /></div>}
+        {draft.step === 0 && <>
+          <div className="upload-zone"><Upload /><div><strong>Add a company logo or product image</strong><span>PNG or JPG, up to 1 MB.</span></div><Input type="file" accept="image/png,image/jpeg" onChange={(event) => { const file = event.target.files?.[0]; if (file && file.size > 1024 * 1024) window.alert("Please choose a file smaller than 1 MB."); }} /></div>
+          <div className="upload-zone"><FileUp /><div><strong>Attach PDFs or other documents</strong><span>PDF, DOC, DOCX, or TXT, up to 3 MB each.</span></div><Input type="file" multiple accept=".pdf,.doc,.docx,.txt" aria-label="Attach PDFs or other documents" onChange={(event) => {
+            const selected = Array.from(event.target.files ?? []);
+            const invalid = selected.find((file) => !/\.(pdf|doc|docx|txt)$/i.test(file.name) || file.size > 3 * 1024 * 1024);
+            if (invalid) window.alert("Please choose PDF, DOC, DOCX, or TXT files smaller than 3 MB each.");
+            else setDocuments((current) => [...current, ...selected]);
+            event.target.value = "";
+          }} /></div>
+          {documents.length > 0 && <ul className="attachment-list">{documents.map((file, index) => <li key={`${file.name}-${index}`}><span>{file.name}</span><button type="button" aria-label={`Remove ${file.name}`} title={`Remove ${file.name}`} onClick={() => setDocuments((current) => current.filter((_, itemIndex) => itemIndex !== index))}><X size={14} /></button></li>)}</ul>}
+          <p className="attachment-note">Files are selected for this session only; this demo does not upload them.</p>
+        </>}
         {draft.step === 6 && <div className="upload-zone"><FileUp /><div><strong>Attach a pitch deck</strong><span>PDF, up to 3 MB.</span></div><Input type="file" accept="application/pdf" onChange={(event) => { const file = event.target.files?.[0]; if (file && file.size > 3 * 1024 * 1024) window.alert("Please choose a PDF smaller than 3 MB."); }} /></div>}
         {draft.step === 7 && <ApplicationReview draft={draft} />}
         {draft.step === 0 && (!draft.values.name || !draft.values.description) && <p className="field-error">Company name and one-line description are required to continue.</p>}
